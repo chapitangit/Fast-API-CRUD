@@ -82,4 +82,8 @@ def create_access_token(data: dict, expires_delta: timedelta):
 
 @api.get("/")
 def read_root():
-    return {"Hello": "World!!!!"}
+    return {"Hello": "World Cris"}
+
+@api.get("/index")
+async def testing():
+    return {"Testing": "Testing Project"}
