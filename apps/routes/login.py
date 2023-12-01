@@ -19,7 +19,7 @@ JWT_SECRET = 'myjwtsecret'
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-api = APIRouter(include_in_schema=False)
+api = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 
