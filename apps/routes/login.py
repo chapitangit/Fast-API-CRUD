@@ -7,11 +7,11 @@ from typing import Union, List
 from datetime import datetime, timedelta
 
 
-from database.mongodb import create_mongo_client
+from  ..database.mongodb import create_mongo_client
 mydb = create_mongo_client()
 
 
-from authentication.utils import OAuth2PasswordBearerWithCookie
+from ..authentication.utils import OAuth2PasswordBearerWithCookie
 
 from jose import jwt
 
@@ -35,8 +35,8 @@ from passlib.context import CryptContext
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-login_router = APIRouter(include_in_schema=False)
-templates = Jinja2Templates(directory="templates")
+# login_router = APIRouter(include_in_schema=False)
+# templates = Jinja2Templates(directory="templates")
 
 
 
