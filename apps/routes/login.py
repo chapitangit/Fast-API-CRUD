@@ -20,7 +20,7 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 api = APIRouter()
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="apps/templates")
 
 
 
@@ -77,13 +77,26 @@ def create_access_token(data: dict, expires_delta: timedelta):
     
     return to_encode
 
+
+@api.post('/sign-up')
+def sign_up(fullname: str, username: str, password: str, status: str,created: Union[datetime, None] = Body(default=None),token: str = Depends(oauth_scheme)):
+    """This function is for inserting """
+    dataInsert = dict()
+    dataInsert = {
+        "fullname": fullname,
+        "username": username,
+        "password": get_password_hash(password),
+        "status": status,
+        "created": created
+        
+        }
+    mydb.login.insert_one(dataInsert)
+    return {"message":"User has been save"} 
   
 
 
-@api.get("/")
-def read_root():
-    return {"Hello": "World Cris"}
 
-@api.get("/index")
-async def testing():
-    return {"Testing": "Testing Project"}
+
+@api.get("/", response_class=HTMLResponse)
+async def api_login(request: Request):
+    return templates.TemplateResponse("login.html", {"request":request}) 
