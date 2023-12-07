@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Body, HTTPException, Depends, Request, Response, status
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
-from typing import Union, List, Optional
+from typing import Union, List
 
 
 from datetime import datetime, timedelta
@@ -19,7 +19,7 @@ JWT_SECRET = 'myjwtsecret'
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-login_router = APIRouter(include_in_schema=False)
+api = APIRouter()
 templates = Jinja2Templates(directory="apps/templates")
 
 
@@ -27,6 +27,8 @@ templates = Jinja2Templates(directory="apps/templates")
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 oauth_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="token")
+
+# oauth_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 
@@ -77,51 +79,64 @@ def create_access_token(data: dict, expires_delta: timedelta):
     return to_encode
 
 
-@login_router.get("/", response_class=HTMLResponse)
-async def api_login(request: Request):
-    return templates.TemplateResponse("login.html", {"request":request}) 
-
-
-
-@login_router.get('/api-login/')
-def login(username1: Optional[str],password1:Optional[str],response:Response):
-    username = username1
-    password = password1
+@api.post('/token')
+def login(response:Response,form_data: OAuth2PasswordRequestForm = Depends()):
+    username = form_data.username
+    password = form_data.password
 
 
     user = authenticate_user(username,password)
-
-    if user == []:
-
-        return {"error": "No Username is register"}
-  
-    elif not user:
-        # raise HTTPException(status_code=400, detail="Incorrect username or password")
-        
-       
-        
-        raise HTTPException(
-            status_code=400,
-            detail= "Incorrect username or password",
-            # headers={"WWW-Authenticate": "Basic"},
-        )
-    
-
+    if not user:
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-                data = {"sub": username,"exp":datetime.utcnow() + timedelta(ACCESS_TOKEN_EXPIRE_MINUTES)}, 
-                expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-                                    )
+        data={"sub": username},
+        expires_delta=access_token_expires,
+    )
 
-    data = {"sub": username,"exp":datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)}
+    data = {"sub": username}
     jwt_token = jwt.encode(data,JWT_SECRET,algorithm=ALGORITHM)
     response.set_cookie(key="access_token", value=f'Bearer {jwt_token}',httponly=True)
-    # return response
     
     return {"access_token": jwt_token, "token_type": "bearer"}
+    # return {"access_token": access_token, "token_type": "bearer"}
+    # return(access_token)
 
 
-@login_router.get("/dashboard/", response_class=HTMLResponse)
-async def api_login(request: Request):
-    return templates.TemplateResponse("dashboard.html", {"request": request})
+@api.post('/sign-up')
+def sign_up(fullname: str, username: str, password: str,created: Union[datetime, None] = Body(default=None)):
+    """This function is for inserting """
+    #,token: str = Depends(oauth_scheme)
+    dataInsert = dict()
+    dataInsert = {
+        "fullname": fullname,
+        "username": username,
+        "password": get_password_hash(password),
+        "created": created
+        }
+    mydb.login.insert_one(dataInsert)
+    return {"message":"User has been save"} 
 
-    
+
+@api.get('/get-user')
+async def find_all_user(token: str = Depends(oauth_scheme)):
+    """This function is querying all user account"""
+    result = mydb.login.find()
+
+    user_data = [
+        {
+             "fullname": i["fullname"],
+            "username": i["username"],
+            "password": i['password'],
+            "created": i["created"]
+
+        }
+        for i in result
+    ]
+
+    return user_data
+  
+
+
+
+

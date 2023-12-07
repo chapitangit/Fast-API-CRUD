@@ -4,3 +4,4 @@ jinja2
 python-jose[cryptography]
 passlib[bcrypt]
 pymongo
+python-multipart
