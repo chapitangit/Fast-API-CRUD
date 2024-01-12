@@ -3,8 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import PlainTextResponse
 
 # from .routes.login import api
-from .routes.admin import api
-from .routes.login import login_router
+# from .routes.admin import api
+# from .routes.login import login_router
+from apps.routes.admin import api
+from apps.routes.login import login_router
 
 from fastapi.staticfiles import StaticFiles
 
