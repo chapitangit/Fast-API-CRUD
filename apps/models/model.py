@@ -26,6 +26,7 @@ class User(SQLModel, table=True):
     hashed_password: str = Field(nullable=False)
     email_add: str = Field(nullable=False)
     full_name: str = Field(max_length=70, default=None)
+    role: str = Field(max_length=70, default=None)
     is_active: bool = Field(default=False)
     date_updated: Optional[datetime] = Field(default=None)
     date_credited: datetime = Field(default_factory=datetime.utcnow)
