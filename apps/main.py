@@ -10,6 +10,8 @@ from apps.routes.login import login_router
 
 from apps.routes.graphql import graphql_app
 
+from apps.routes.inventory import api_inventory
+
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
@@ -26,6 +28,7 @@ app.add_middleware(
 
 app.include_router(api, tags=["admin"])
 app.include_router(login_router)
+app.include_router(api_inventory)
 
 # Mount Strawberry's GraphQL app onto FastAPI
 app.mount("/graphql", graphql_app)

@@ -37,6 +37,8 @@ class Query:
             return User(fullname=user['fullname'], username=user['username'], password=user['password'], created=user['created'])
         else:
             return None
+        
+    
 
 
 
