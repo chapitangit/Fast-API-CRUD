@@ -17,6 +17,17 @@ class User:
     password: Optional[str] = None
     created: Optional[str] = None
 
+
+@strawberry.type
+class EmployeeDetailsQuery:
+    employee_id: Optional[str] = None
+    employee_name: Optional[str] = None
+    division: Optional[str] = None
+    position: Optional[str] = None
+    status: bool
+    created: Optional[datetime] = None
+    updated: Optional[str] = None
+
     
 
 @strawberry.type
@@ -37,6 +48,24 @@ class Query:
             return User(fullname=user['fullname'], username=user['username'], password=user['password'], created=user['created'])
         else:
             return None
+        
+
+    @strawberry.field
+    async def get_all_employees(self) -> List[EmployeeDetailsQuery]:
+        employee_collection = mydb['employee']
+        employees = employee_collection.find()
+
+        return [
+            EmployeeDetailsQuery(
+                employee_id=employee.get('employee_id'),
+                employee_name=employee.get('employee_name'),
+                division=employee.get('division'),
+                position=employee.get('position'),
+                status=employee.get('status'),
+                created=employee.get('created'),
+                updated=employee.get('updated')
+            ) for employee in employees
+        ]
         
     
 
