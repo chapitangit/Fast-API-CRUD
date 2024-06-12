@@ -20,6 +20,7 @@ class User:
 
 @strawberry.type
 class EmployeeDetailsQuery:
+    _id: Optional[str] = None
     employee_id: Optional[str] = None
     employee_name: Optional[str] = None
     division: Optional[str] = None
@@ -57,6 +58,7 @@ class Query:
 
         return [
             EmployeeDetailsQuery(
+                _id = employee.get('_id'),
                 employee_id=employee.get('employee_id'),
                 employee_name=employee.get('employee_name'),
                 division=employee.get('division'),

@@ -16,6 +16,11 @@ templates = Jinja2Templates(directory="apps/templates")
 @api_inventory.get("/employee-list/", response_class=HTMLResponse)
 async def api_login(request: Request,username: str = Depends(get_current_user)):
     return templates.TemplateResponse("inventory/employee.html", {"request": request})
+
+
+@api_inventory.get("/api-update-employee-list/{id}", response_class=HTMLResponse)
+async def api_update_employee_html(request: Request,username: str = Depends(get_current_user)):
+    return templates.TemplateResponse("inventory/update_employee.html", {"request": request})
         
     
     
